@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTax Guide</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="container">
+        <div class="login-card">
+            <h2>SmartTax Guide Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="userId">User ID</label>
+                    <input type="text" id="userId" name="userId" required>
+                </div>
+                <div class="form-group">
+                    <label for="clientId">Client ID</label>
+                    <input type="number" id="clientId" name="clientId" required>
+                </div>
+                <div class="form-group">
+                    <label for="reference">Reference</label>
+                    <select id="reference" name="reference" required>
+                        <option value="">Select Type</option>
+                        <option value="individual">Individual</option>
+                        <option value="company">Company</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chat Section -->
+    <div id="chatSection" class="chat-container" style="display: none;">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>SmartTax Guide</h2>
+                <button id="newChatBtn" class="new-chat-btn">+ New chat</button>
+            </div>
+            <div class="chat-history" id="chatHistory">
+                <!-- Chat history will be added here -->
+            </div>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="logout-btn">Logout</button>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="chat-header">
+                <h3 id="chatTitle">SmartTax Guide</h3>
+            </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will be added here -->
+        </div>
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <textarea id="messageInput" placeholder="Send a message..." disabled rows="1"></textarea>
+                <button id="sendBtn" class="send-btn" disabled>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <div class="input-footer">
+                <small>SmartTax Guide can make mistakes. Consider checking important information.</small>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

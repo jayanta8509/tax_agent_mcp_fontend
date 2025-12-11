@@ -1,6 +1,69 @@
 // Global variables
 let userData = null;
+let userSessionData = {}; // Store confirmed user data
 const API_BASE_URL = 'https://arsalaanrasultax.bestworks.cloud';
+
+// Response parser utilities
+class ResponseParser {
+    static parseResponse(response) {
+        // Handle ITIN special case (keep this as it has functional buttons)
+        if (response.includes('apply for ITIN')) {
+            return {
+                type: 'itin_application',
+                message: this.formatMessage(response),
+                needsUpload: true,
+                uploadType: 'w7_form'
+            };
+        }
+
+        // Return as simple message with markdown formatting
+        return {
+            type: 'message',
+            text: this.formatMessage(response)
+        };
+    }
+
+    static formatMessage(text) {
+        if (!text) return '';
+        return text
+            // Bold: **text**
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            // Italic: *text*
+            .replace(/\*(.*?)\*/g, '<i>$1</i>')
+            // Bold: __text__
+            .replace(/__(.*?)__/g, '<b>$1</b>')
+            // Italic: _text_
+            .replace(/_(.*?)_/g, '<i>$1</i>')
+            // Newlines to <br>
+            .replace(/\n/g, '<br>');
+    }
+
+    static extractFieldName(text) {
+        // Convert phrases like "full legal name" to camelCase
+        const mapping = {
+            'full legal name': 'legalName',
+            'date of birth': 'dateOfBirth',
+            'us address': 'usAddress',
+            'occupation or source of U.S. income': 'occupation',
+            'itin number': 'itin',
+            'w7 form uploaded': 'w7Form'
+        };
+
+        const lowerText = text.toLowerCase().replace(/^client\s+is\s+["']?/, '');
+        return mapping[lowerText] || lowerText.replace(/\s+/g, '');
+    }
+
+    static cleanValue(value) {
+        // Remove artifacts like "client is", bold markers, and quotes
+        return value
+            .replace(/^client\s+is\s+["']?/i, '')
+            .replace(/^\*\*/, '')
+            .replace(/\*\*$/, '')
+            .replace(/^["']/, '')
+            .replace(/["']$/, '')
+            .trim();
+    }
+}
 
 // DOM elements
 const loginSection = document.getElementById('loginSection');
@@ -179,7 +242,7 @@ async function sendStartMessage() {
         };
 
         // Send request to API
-        const response = await fetch(`${API_BASE_URL}/chat/agent`, {
+        const response = await fetch(`${API_BASE_URL}/chat/workflow`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -196,8 +259,16 @@ async function sendStartMessage() {
 
         const data = await response.json();
 
-        // Add agent response to chat
-        addMessage('agent', data.response);
+        // Parse and add agent response
+        console.log('Raw response:', data.response);
+        const parsedResponse = ResponseParser.parseResponse(data.response);
+        console.log('Parsed response:', parsedResponse);
+        if (parsedResponse.type === 'message') {
+            // If parsing failed, show raw response with regular message
+            addMessage('agent', data.response);
+        } else {
+            addParsedMessage('agent', parsedResponse);
+        }
 
     } catch (error) {
         console.error('Error sending start message:', error);
@@ -235,7 +306,7 @@ async function sendMessage() {
         };
 
         // Send request to API
-        const response = await fetch(`${API_BASE_URL}/chat/agent`, {
+        const response = await fetch(`${API_BASE_URL}/chat/workflow`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -252,8 +323,16 @@ async function sendMessage() {
 
         const data = await response.json();
 
-        // Add agent response to chat
-        addMessage('agent', data.response);
+        // Parse and add agent response
+        console.log('Raw response:', data.response);
+        const parsedResponse = ResponseParser.parseResponse(data.response);
+        console.log('Parsed response:', parsedResponse);
+        if (parsedResponse.type === 'message') {
+            // If parsing failed, show raw response with regular message
+            addMessage('agent', data.response);
+        } else {
+            addParsedMessage('agent', parsedResponse);
+        }
 
     } catch (error) {
         console.error('Error sending message:', error);
@@ -268,7 +347,84 @@ async function sendMessage() {
     }
 }
 
-// Add message to chat
+// Add parsed message to chat
+function addParsedMessage(type, parsedData, id = null) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}`;
+    if (id) messageDiv.id = id;
+
+    const avatar = type === 'agent' ? 'ST' : 'U';
+    let contentHTML = '';
+
+    switch (parsedData.type) {
+        case 'question':
+            contentHTML = `
+                <div class="question-message">
+                    <p>${parsedData.question}</p>
+                    <div class="current-value">
+                        <span class="label">Current value:</span>
+                        <span class="value">${parsedData.currentValue}</span>
+                    </div>
+                    <div class="confirmation-hint">
+                        Reply with 'Yes' to confirm or provide the correct value
+                    </div>
+                </div>
+            `;
+            break;
+
+        case 'confirmation':
+            contentHTML = `
+                <div class="confirmation-message">
+                    <p>${parsedData.message}</p>
+                </div>
+            `;
+            break;
+
+        case 'request':
+            contentHTML = `
+                <div class="request-message">
+                    <p>${parsedData.question}</p>
+                </div>
+            `;
+            break;
+
+        case 'update':
+            contentHTML = `
+                <div class="update-message">
+                    <p>✓ Updated!</p>
+                    <div class="updated-field">
+                        <span class="label">Your ${parsedData.field.replace(/([A-Z])/g, ' $1').toLowerCase()} is now:</span>
+                        <span class="value">${parsedData.newValue}</span>
+                    </div>
+                </div>
+            `;
+            break;
+
+        case 'itin_application':
+            contentHTML = `
+                <div class="itin-message">
+                    <p>${parsedData.message}</p>
+                    <button class="upload-btn" onclick="handleFileUpload('w7_form')">
+                        📄 Upload W7 Form
+                    </button>
+                </div>
+            `;
+            break;
+
+        default:
+            contentHTML = `<div class="simple-message">${parsedData.text || parsedData}</div>`;
+    }
+
+    messageDiv.innerHTML = `
+        <div class="message-avatar">${avatar}</div>
+        <div class="message-content">${contentHTML}</div>
+    `;
+
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Add regular message to chat (fallback)
 function addMessage(type, content, id = null, isWelcome = false) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;
@@ -276,11 +432,15 @@ function addMessage(type, content, id = null, isWelcome = false) {
 
     const avatar = type === 'agent' ? 'ST' : 'U';
 
-    // Format welcome message specially
-    let formattedContent = content;
-    if (isWelcome && typeof content === 'string') {
-        // Parse welcome message to highlight important parts
-        formattedContent = content.replace(/"(.*?)"/g, '<span class="highlight-text">"$1"</span>');
+    // Format content with markdown if it's a string
+    let formattedContent = typeof content === 'string' ? ResponseParser.formatMessage(content) : content;
+
+    // For welcome message, highlight text inside quotes
+    if (isWelcome) {
+        if (typeof content === 'string') {
+            // Handle standard double quotes, curly quotes, etc.
+            formattedContent = formattedContent.replace(/(["“])([^"”]+)(["”])/g, '<span class="highlight-text">"$2"</span>');
+        }
         formattedContent = `<div class="welcome-message">${formattedContent}</div>`;
     }
 
@@ -301,6 +461,57 @@ function removeMessage(id) {
             element.remove();
         }
     }
+}
+
+// Handle file upload
+function handleFileUpload(type) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = type === 'w7_form' ? '.pdf,.jpg,.jpeg,.png' : '*';
+
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Show upload message
+        addMessage('user', `📄 Uploaded ${file.name}`);
+
+        // Show loading
+        const loadingId = 'loading-upload';
+        addMessage('agent', '<div class="loading"></div> Processing upload...', loadingId);
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('user_id', userData.user_id);
+        formData.append('client_id', userData.client_id);
+        formData.append('reference', userData.reference);
+        formData.append('document_type', type);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/upload/document`, {
+                method: 'POST',
+                body: formData
+            });
+
+            removeMessage(loadingId);
+
+            if (response.ok) {
+                const result = await response.json();
+                addMessage('agent', `✓ Successfully uploaded ${file.name}. ${result.message || 'File processed successfully.'}`);
+
+                // Store upload info
+                userSessionData.w7Form = file.name;
+            } else {
+                throw new Error('Upload failed');
+            }
+        } catch (error) {
+            removeMessage(loadingId);
+            addMessage('agent', '❌ Upload failed. Please try again.');
+        }
+    };
+
+    input.click();
 }
 
 // Show error message

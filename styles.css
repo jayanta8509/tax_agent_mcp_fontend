@@ -276,6 +276,18 @@ body {
     word-wrap: break-word;
 }
 
+.message-content b,
+.message-content strong {
+    color: #10a37f;
+    font-weight: 700;
+}
+
+.message-content i,
+.message-content em {
+    font-style: italic;
+    color: #ececf1;
+}
+
 .message .timestamp {
     font-size: 12px;
     color: #8e8ea0;
@@ -381,7 +393,9 @@ body {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Error message */
@@ -434,6 +448,144 @@ body {
     display: inline-block;
 }
 
+/* Parsed Message Styles */
+
+/* Question messages */
+.question-message {
+    background: rgba(16, 163, 127, 0.08);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(16, 163, 127, 0.2);
+    margin: 12px 0;
+}
+
+.question-message p {
+    margin: 0 0 12px 0;
+    font-weight: 500;
+    color: #ececf1;
+    font-size: 16px;
+}
+
+.current-value {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+}
+
+.current-value .label {
+    font-weight: 600;
+    color: #8e8ea0;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.current-value .value {
+    display: block;
+    margin-top: 6px;
+    font-size: 16px;
+    color: #10a37f;
+    font-weight: 500;
+}
+
+.confirmation-hint {
+    margin-top: 12px;
+    color: #8e8ea0;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* Confirmation messages */
+.confirmation-message {
+    color: #10a37f;
+    font-weight: 500;
+    padding: 12px 0;
+}
+
+/* Request messages */
+.request-message {
+    color: #ececf1;
+}
+
+.request-message p {
+    margin: 0;
+    font-size: 16px;
+}
+
+/* Update messages */
+.update-message {
+    background: rgba(16, 163, 127, 0.08);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(16, 163, 127, 0.2);
+    margin: 12px 0;
+}
+
+.update-message p:first-child {
+    margin: 0 0 12px 0;
+    font-weight: 600;
+    color: #10a37f;
+    font-size: 16px;
+}
+
+.updated-field {
+    color: #ececf1;
+}
+
+.updated-field .label {
+    font-weight: 600;
+    margin-right: 5px;
+    color: #8e8ea0;
+}
+
+.updated-field .value {
+    font-weight: 500;
+    color: #10a37f;
+}
+
+/* ITIN/Upload messages */
+.itin-message {
+    background: rgba(255, 193, 7, 0.08);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    margin: 12px 0;
+}
+
+.itin-message p {
+    margin: 0 0 12px 0;
+    color: #ececf1;
+    font-size: 16px;
+}
+
+.upload-btn {
+    background: #ffc107;
+    color: #212529;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.upload-btn:hover {
+    background: #e0a800;
+    transform: translateY(-1px);
+}
+
+/* Simple message */
+.simple-message {
+    line-height: 1.6;
+    font-size: 16px;
+    color: #ececf1;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
@@ -448,5 +600,16 @@ body {
 
     .welcome-message {
         padding: 12px;
+    }
+
+    .question-message,
+    .update-message,
+    .itin-message {
+        padding: 12px;
+    }
+
+    .upload-btn {
+        width: 100%;
+        justify-content: center;
     }
 }

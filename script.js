@@ -103,9 +103,10 @@ async function handleLogin(e) {
     e.preventDefault();
 
     const formData = new FormData(loginForm);
+
     userData = {
-        user_id: formData.get('userId'),
-        client_id: parseInt(formData.get('clientId')),
+        user_id: formData.get('userId').trim(),
+        client_id: formData.get('clientId').trim(),
         reference: formData.get('reference')
     };
 

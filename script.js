@@ -233,17 +233,16 @@ async function sendStartMessage() {
     addMessage('agent', '<div class="loading"></div> Thinking...', loadingId);
 
     try {
-        // Prepare API request
+        // Prepare API request with new parameters
         const requestData = {
             user_id: userData.user_id,
             client_id: userData.client_id,
             reference: userData.reference,
-            query: "start",
-            use_agent: true
+            human_response: "start"
         };
 
         // Send request to API
-        const response = await fetch(`${API_BASE_URL}/chat/workflow`, {
+        const response = await fetch(`${API_BASE_URL}/tax/workflow`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -260,16 +259,8 @@ async function sendStartMessage() {
 
         const data = await response.json();
 
-        // Parse and add agent response
-        console.log('Raw response:', data.response);
-        const parsedResponse = ResponseParser.parseResponse(data.response);
-        console.log('Parsed response:', parsedResponse);
-        if (parsedResponse.type === 'message') {
-            // If parsing failed, show raw response with regular message
-            addMessage('agent', data.response);
-        } else {
-            addParsedMessage('agent', parsedResponse);
-        }
+        // Display question and ai_response from the new response structure
+        addWorkflowResponse(data);
 
     } catch (error) {
         console.error('Error sending start message:', error);
@@ -297,17 +288,16 @@ async function sendMessage() {
     addMessage('agent', '<div class="loading"></div> Thinking...', loadingId);
 
     try {
-        // Prepare API request
+        // Prepare API request with new parameters
         const requestData = {
             user_id: userData.user_id,
             client_id: userData.client_id,
             reference: userData.reference,
-            query: message,
-            use_agent: true
+            human_response: message
         };
 
         // Send request to API
-        const response = await fetch(`${API_BASE_URL}/chat/workflow`, {
+        const response = await fetch(`${API_BASE_URL}/tax/workflow`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -324,16 +314,8 @@ async function sendMessage() {
 
         const data = await response.json();
 
-        // Parse and add agent response
-        console.log('Raw response:', data.response);
-        const parsedResponse = ResponseParser.parseResponse(data.response);
-        console.log('Parsed response:', parsedResponse);
-        if (parsedResponse.type === 'message') {
-            // If parsing failed, show raw response with regular message
-            addMessage('agent', data.response);
-        } else {
-            addParsedMessage('agent', parsedResponse);
-        }
+        // Display question and ai_response from the new response structure
+        addWorkflowResponse(data);
 
     } catch (error) {
         console.error('Error sending message:', error);
@@ -346,6 +328,33 @@ async function sendMessage() {
         sendBtn.disabled = false;
         messageInput.focus();
     }
+}
+
+// Add workflow response to chat (displays question and ai_response)
+function addWorkflowResponse(data) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message agent';
+
+    const avatar = 'ST';
+
+    // Format the question and ai_response
+    const question = data.question || '';
+    const aiResponse = data.ai_response || '';
+
+    const contentHTML = `
+        <div class="workflow-response">
+            <div class="question-section">${ResponseParser.formatMessage(question)}</div>
+            <div class="ai-response-section">${ResponseParser.formatMessage(aiResponse)}</div>
+        </div>
+    `;
+
+    messageDiv.innerHTML = `
+        <div class="message-avatar">${avatar}</div>
+        <div class="message-content">${contentHTML}</div>
+    `;
+
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // Add parsed message to chat

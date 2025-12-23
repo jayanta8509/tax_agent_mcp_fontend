@@ -330,23 +330,34 @@ async function sendMessage() {
     }
 }
 
-// Add workflow response to chat (displays question and ai_response)
+// Add workflow response to chat (displays question and ai_response or final_response)
 function addWorkflowResponse(data) {
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message agent';
 
     const avatar = 'ST';
 
-    // Format the question and ai_response
-    const question = data.question || '';
-    const aiResponse = data.ai_response || '';
+    let contentHTML = '';
 
-    const contentHTML = `
-        <div class="workflow-response">
-            <div class="question-section">${ResponseParser.formatMessage(question)}</div>
-            <div class="ai-response-section">${ResponseParser.formatMessage(aiResponse)}</div>
-        </div>
-    `;
+    // Check if response is completed status with final_response
+    if (data.status === 'completed' && data.final_response) {
+        contentHTML = `
+            <div class="workflow-response">
+                <div class="final-response-section">${ResponseParser.formatMessage(data.final_response)}</div>
+            </div>
+        `;
+    } else {
+        // Format the question and ai_response
+        const question = data.question || '';
+        const aiResponse = data.ai_response || '';
+
+        contentHTML = `
+            <div class="workflow-response">
+                <div class="question-section">${ResponseParser.formatMessage(question)}</div>
+                <div class="ai-response-section">${ResponseParser.formatMessage(aiResponse)}</div>
+            </div>
+        `;
+    }
 
     messageDiv.innerHTML = `
         <div class="message-avatar">${avatar}</div>

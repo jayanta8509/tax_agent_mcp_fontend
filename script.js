@@ -366,6 +366,21 @@ function addWorkflowResponse(data) {
 
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // If status is completed, send thank you message and disable input
+    if (data.status === 'completed') {
+        setTimeout(() => {
+            addMessage('user', 'Thank you for your confirmations');
+            disableUserInput();
+        }, 500);
+    }
+}
+
+// Disable user input after workflow completion
+function disableUserInput() {
+    messageInput.disabled = true;
+    sendBtn.disabled = true;
+    messageInput.placeholder = 'Workflow completed. Input disabled.';
 }
 
 // Add parsed message to chat

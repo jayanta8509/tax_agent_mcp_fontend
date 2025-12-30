@@ -148,7 +148,7 @@ async function handleLogin(e) {
         const data = await response.json();
 
         // Add personalized welcome message
-        addMessage('agent', data.response.welcome_message, null, true);
+        addMessage('agent', "Hi there. I can help you file your 1040-NR Nonresident Tax Return. Let's start.", null, true);
 
         // Store additional user info if needed
         userData.reference_id = data.response.reference_id;

@@ -586,6 +586,82 @@ body {
     color: #ececf1;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+.client-selection {
+    margin: 10px 0;
+}
+
+.selection-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.client-boxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.client-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+.client-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    border-color: #667eea;
+}
+
+.client-box:active {
+    transform: translateY(-1px);
+}
+
+.client-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: white;
+}
+.client-type {
+    font-size: 12px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.client-id {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-bottom: 4px;
+}
+
+.practice-id {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {

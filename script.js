@@ -1,7 +1,7 @@
 // Global variables
 let userData = null;
 let userSessionData = {}; // Store confirmed user data
-const API_BASE_URL = 'https://arsalaanrasultax.bestworks.cloud';
+const API_BASE_URL = 'https://1040nrtax.bestworks.cloud';
 
 // Response parser utilities
 class ResponseParser {

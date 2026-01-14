@@ -3062,7 +3062,7 @@ function displayClientSelection(clients) {
 
     const contentHTML = `
         <div class="client-selection">
-            <p class="selection-title">We found some associate clients for you.Select one to start with</p>
+            <p class="selection-title">We found some associate clients for you. Select one to start with.</p>
             <div class="client-boxes">
                 ${meOption}
                 ${clientBoxesHTML}

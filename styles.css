@@ -599,38 +599,41 @@ body {
 
 
 .client-selection {
-    margin: 10px 0;
+    margin: 8px 0;
 }
 
 .selection-title {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 500;
-    margin-bottom: 15px;
-    color: #2c3e50;
+    margin-bottom: 10px;
+    color: #cadff5;
+    opacity: 0.9;
 }
 
 .client-boxes {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 12px;
-    margin-top: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
 }
 
 .client-box {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: 2px solid transparent;
-    border-radius: 12px;
-    padding: 16px;
+   background: rgba(102, 126, 234, 0.15); /* More subtle background */
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    border-radius: 8px; /* Slightly smaller radius */
+    padding: 10px 12px; /* Significantly reduced padding */
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
     color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .client-box:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
-    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .client-box:active {
@@ -638,16 +641,17 @@ body {
 }
 
 .client-name {
-    font-size: 16px;
+  font-size: 14px; /* Scaled down */
     font-weight: 600;
-    margin-bottom: 8px;
-    color: white;
+    margin-bottom: 2px; /* Minimal bottom margin */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Prevents long names from breaking UI */
 }
 .client-type {
-    font-size: 12px;
+font-size: 11px; /* Smaller metadata */
     font-weight: 400;
-    margin-bottom: 8px;
-    color: white;
+    opacity: 0.8;
 }
 
 .client-id {
@@ -660,6 +664,10 @@ body {
     font-size: 12px;
     opacity: 0.8;
     margin-top: 4px;
+}
+.client-box-me {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.25);
 }
 
 /* Responsive */

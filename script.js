@@ -2997,7 +2997,7 @@ async function callSubClientAPI() {
                 // NO SUBCLIENTS AVAILABLE - Enable input and auto-start "Me" workflow
                 console.log('No subclients found, enabling input for "Me" workflow');
                 enableUserInput();
-                addMessage('agent', 'No subclients available. Continuing with your personal ("Me") tax filing.', null, true);
+               // addMessage('agent', 'No subclients available. Continuing with your personal ("Me") tax filing.', null, true);
                 setTimeout(() => {
                     sendStartMessage(); // Auto-trigger "Me" workflow
                 }, 1000);
@@ -3006,7 +3006,7 @@ async function callSubClientAPI() {
             // NO SUBCLIENT DATA - Enable input and auto-start "Me" workflow
             console.log('No subclient data found, enabling input for "Me" workflow');
             enableUserInput();
-            addMessage('agent', 'No subclients found. Let\'s continue with your personal tax filing.', null, true);
+           // addMessage('agent', 'No subclients found. Let\'s continue with your personal tax filing.', null, true);
             setTimeout(() => {
                 sendStartMessage(); // Auto-trigger "Me" workflow
             }, 1000);
@@ -3055,14 +3055,14 @@ function displayClientSelection(clients) {
 
     let clientBoxesHTML = uniqueClients.map(client => `
         <div class="client-box" onclick="selectClient('${client.client_id}', '${client.client_name}', ${client.reference_id}, '${client.practice_id}')">
-            <div class="client-name">${client.client_name}</div>
-            <div class="client-type">${client.association_type}</div>
+            <div class="client-name">${client.client_name} (${client.client_id})</div>
+            <div class="client-type">${client.association_type==='Sub Client'?'Associate Client':''}</div>
         </div>
     `).join('');
 
     const contentHTML = `
         <div class="client-selection">
-            <p class="selection-title">Please select a client to continue:</p>
+            <p class="selection-title">We found some associate clients for you.Select one to start with</p>
             <div class="client-boxes">
                 ${meOption}
                 ${clientBoxesHTML}

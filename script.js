@@ -640,15 +640,79 @@ async function sendSubclientMessage() {
 }
 
 // Add workflow response to chat (displays question and ai_response or final_response)
+// function addWorkflowResponse(data) {
+//     console.log(data,"data")
+    
+//     const messageDiv = document.createElement('div');
+//     messageDiv.className = 'message agent';
+
+//     const avatar = 'ST';
+
+//     let contentHTML = '';
+
+//     // Check if response is completed status with final_response
+//     if (data.status === 'completed' && data.final_response) {
+//         contentHTML = `
+//             <div class="workflow-response">
+//                 <div class="final-response-section">${ResponseParser.formatMessage(data.final_response)}</div>
+//             </div>
+//         `;
+//     } else {
+//         // Format the question and ai_response
+//         const question = data.question || '';
+//         const aiResponse = data.ai_response || '';
+
+//         contentHTML = `
+//             <div class="workflow-response">
+//                 <div class="question-section">${ResponseParser.formatMessage(question)}</div>
+//                 <div class="ai-response-section">${ResponseParser.formatMessage(aiResponse)}</div>
+//             </div>
+//         `;
+//     }
+
+//     messageDiv.innerHTML = `
+//         <div class="message-avatar">${avatar}</div>
+//         <div class="message-content">${contentHTML}</div>
+//     `;
+
+//     chatMessages.appendChild(messageDiv);
+//     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+//     // If status is completed, send thank you message and disable input
+//     if (data.status === 'completed') {
+//         setTimeout(() => {
+//             addMessage('user', 'Thank you for your confirmations');
+//             disableUserInput();
+//         }, 500);
+//     }
+// }
+
+
 function addWorkflowResponse(data) {
+    console.log(data, "data");
+
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message agent';
-
     const avatar = 'ST';
-
     let contentHTML = '';
 
-    // Check if response is completed status with final_response
+    // ✅ NEW: Handle off-topic / status_code 201 — show only `result`
+    if (data.status_code === 201 && data.result) {
+        contentHTML = `
+            <div class="workflow-response">
+                <div class="ai-response-section">${ResponseParser.formatMessage(data.result)}</div>
+            </div>
+        `;
+        messageDiv.innerHTML = `
+            <div class="message-avatar">${avatar}</div>
+            <div class="message-content">${contentHTML}</div>
+        `;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return; // ✅ Exit early, no further processing
+    }
+
+    // Existing: completed status with final_response
     if (data.status === 'completed' && data.final_response) {
         contentHTML = `
             <div class="workflow-response">
@@ -656,10 +720,9 @@ function addWorkflowResponse(data) {
             </div>
         `;
     } else {
-        // Format the question and ai_response
+        // Existing: question + ai_response
         const question = data.question || '';
         const aiResponse = data.ai_response || '';
-
         contentHTML = `
             <div class="workflow-response">
                 <div class="question-section">${ResponseParser.formatMessage(question)}</div>
@@ -672,11 +735,9 @@ function addWorkflowResponse(data) {
         <div class="message-avatar">${avatar}</div>
         <div class="message-content">${contentHTML}</div>
     `;
-
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // If status is completed, send thank you message and disable input
     if (data.status === 'completed') {
         setTimeout(() => {
             addMessage('user', 'Thank you for your confirmations');
@@ -684,6 +745,11 @@ function addWorkflowResponse(data) {
         }, 500);
     }
 }
+
+
+
+
+
 
 // Disable user input after workflow completion
 function disableUserInput() {
